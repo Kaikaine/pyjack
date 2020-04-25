@@ -71,6 +71,65 @@ class Chips:
         self.total -= self.bet
 
 
+def take_bet(chips):
+    while True:
+        try:
+            chips.bet = int(input("How many chips you wanna bet?: "))
+        except:
+            print("Pick a number")
+        else:
+            if chips.bet > chips.total:
+                print(
+                    print(f"Sorry, you do not have enough chips, you have: {chips.total}"))
+            else:
+                break
+
+
+def hit(deck, hand):
+    single_card = deck.deal()
+    hand.add_card(single_card)
+    hand.adjust_for_ace()
+
+
+def hit_or_stand(deck, hand):
+
+    while True:
+        x = input("Hit or Stand? H/S")
+        if x[0].lower == 'h':
+            hit(deck, hand)
+        elif x[0].lower() == 's':
+            print("Player Stands, Dealer's turn")
+            playing = False
+        else:
+            print("Not a valid command, enter H or S")
+            continue
+        break
+
+
+def player_busts(player, dealer, chips):
+    print("Player busts!")
+    chips.lose_bet()
+
+
+def player_wins(player, dealer, chips):
+    print("Player wins!")
+    chips.win_bet()
+
+
+def dealer_busts(player, dealer, chips):
+    print("Dealer busts!")
+    chips.win_bet()
+
+
+def dealer_wins(player, dealer, chips):
+    print("Dealer wins!")
+    chips.lose_bet()
+
+
+def push(player, dealer):
+    print("Dealer and Player tie! It's a push.")
+
+
 test_deck = Deck()
 print(test_deck)
 test_deck.shuffle()
