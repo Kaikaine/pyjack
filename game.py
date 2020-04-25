@@ -80,7 +80,7 @@ def take_bet(chips):
         else:
             if chips.bet > chips.total:
                 print(
-                    print(f"Sorry, you do not have enough chips, you have: {chips.total}"))
+                    "Sorry, you do not have enough chips, you have: {chips.total}")
             else:
                 break
 
@@ -92,18 +92,43 @@ def hit(deck, hand):
 
 
 def hit_or_stand(deck, hand):
-
+    global playing
+    # h = "h"
+    # s = "s"
     while True:
-        x = input("Hit or Stand? H/S")
-        if x[0].lower == 'h':
+        x = raw_input("Would you like to Hit or Stand? Enter 'h' or 's': ")
+        print(x)
+        if x[0].lower() == 'h':
             hit(deck, hand)
+
         elif x[0].lower() == 's':
-            print("Player Stands, Dealer's turn")
+            print("Player stands. Dealer is playing.")
             playing = False
+
         else:
-            print("Not a valid command, enter H or S")
+            print("Sorry, please try again.")
             continue
         break
+
+
+def show_some(player, dealer):
+    print("DEALERS HAND: ")
+    print("one card hidden")
+    print(dealer.cards[1])
+    print("\n")
+    print("PlAYERS HANDS: ")
+    for card in player.cards:
+        print(card)
+
+
+def show_all(player, dealer):
+    print("DEALERS HAND:")
+    for card in dealer.cards:
+        print(card)
+    print("\n")
+    print("PLAYERS HAND:")
+    for card in player.cards:
+        print(card)
 
 
 def player_busts(player, dealer, chips):
@@ -130,14 +155,62 @@ def push(player, dealer):
     print("Dealer and Player tie! It's a push.")
 
 
-test_deck = Deck()
-print(test_deck)
-test_deck.shuffle()
-print("--------")
-print(test_deck)
-print("--------")
-test_player = Hand()
-pulled_card = test_deck.deal()
-test_player.add_card(pulled_card)
-print(test_player.value)
-print(test_player.cards)
+while True:
+    print('Welcome to BlackJack! Get as close to 21 as you can without going over!\n\
+    Dealer hits until she reaches 17. Aces count as 1 or 11.')
+
+    deck = Deck()
+    deck.shuffle()
+
+    player_hand = Hand()
+    player_hand.add_card(deck.deal())
+    player_hand.add_card(deck.deal())
+
+    dealer_hand = Hand()
+    dealer_hand.add_card(deck.deal())
+    dealer_hand.add_card(deck.deal())
+
+    player_chips = Chips()
+
+    take_bet(player_chips)
+
+    show_some(player_hand, dealer_hand)
+
+    hit_or_stand(deck, player_hand)
+
+    show_some(player_hand, dealer_hand)
+
+    if player_hand.value > 21:
+        player_busts(player_hand, dealer_hand, player_chips)
+        break
+
+    if player_hand.value <= 21:
+
+        while dealer_hand.value < 17:
+            hit(deck, dealer_hand)
+
+        show_all(player_hand, dealer_hand)
+
+        if dealer_hand.value > 21:
+            dealer_busts(player_hand, dealer_hand, player_chips)
+
+        elif dealer_hand.value > player_hand.value:
+            dealer_wins(player_hand, dealer_hand, player_chips)
+
+        elif dealer_hand.value < player_hand.value:
+            player_wins(player_hand, dealer_hand, player_chips)
+
+        else:
+            push(player_hand, dealer_hand)
+
+    print("\n Player's winnings stand at", player_chips.total)
+
+    new_game = raw_input(
+        "Would you like to play another hand? Enter 'y' or 'n' ")
+
+    if new_game[0].lower() == 'y':
+        playing = True
+        continue
+    else:
+        print("Thanks for playing!")
+        break
